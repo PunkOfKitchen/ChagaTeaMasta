@@ -112,22 +112,24 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7suqyxIYUfyb3N3kE3zxBEC8bzXJ8uLFrHcvSKtZ125NbZdA-e3hretdW85E0mW0xA/exec"; // ⚠️ ЗАМЕНИТЕ!
+        // ⚠️ ВСТАВЬТЕ СЮДА ВАШ РЕАЛЬНЫЙ URL СКРИПТА
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7suqyxIYUfyb3N3kE3zxBEC8bzXJ8uLFrHcvSKtZ125NbZdA-e3hretdW85E0mW0xA/exec";
 
         let currentProduct = null;
 
-        // Загрузка каталога
-        async function loadCatalog() {
-            try {
-                const response = await fetch(SCRIPT_URL);
-                const products = await response.json();
-                renderCatalog(products);
-            } catch(e) {
-                document.getElementById('catalog').innerHTML = '<div class="error">❌ Не удалось загрузить каталог. Проверьте URL скрипта.</div>';
-                console.error(e);
-            }
+        // === ЗАГРУЗКА КАТАЛОГА (JSONP — обходит CORS) ===
+        function loadCatalog() {
+            const script = document.createElement('script');
+            script.src = SCRIPT_URL + '?callback=callback&t=' + Date.now();
+            document.body.appendChild(script);
         }
 
+        // === ФУНКЦИЯ, КОТОРУЮ ВЫЗЫВАЕТ JSONP ===
+        function callback(data) {
+            renderCatalog(data);
+        }
+
+        // === ОТОБРАЖЕНИЕ ТОВАРОВ ===
         function renderCatalog(products) {
             const container = document.getElementById('catalog');
             if (!products || products.length === 0) {
@@ -148,7 +150,7 @@
             `).join('');
         }
 
-        // Открыть модалку
+        // === ОТКРЫТЬ МОДАЛКУ ===
         function openModal(productName) {
             currentProduct = productName;
             document.getElementById('productName').textContent = `Товар: ${productName}`;
@@ -163,7 +165,7 @@
             currentProduct = null;
         }
 
-        // Отправить заказ
+        // === ОТПРАВИТЬ ЗАКАЗ ===
         async function sendOrder() {
             const name = document.getElementById('customerName').value.trim();
             const phone = document.getElementById('customerPhone').value.trim();
@@ -183,7 +185,7 @@
             };
 
             try {
-                const response = await fetch(SCRIPT_URL, {
+                await fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
@@ -197,7 +199,7 @@
             }
         }
 
-        // Запуск
+        // === ЗАПУСК ===
         loadCatalog();
     </script>
 </body>
