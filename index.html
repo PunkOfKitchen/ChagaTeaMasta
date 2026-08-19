@@ -117,23 +117,27 @@
 
         let currentProduct = null;
 
-        // === ЗАГРУЗКА КАТАЛОГА (JSONP — обходит CORS) ===
+        // === ЗАГРУЗКА КАТАЛОГА (JSONP) ===
         function loadCatalog() {
+            console.log('1. Загружаем каталог. URL:', SCRIPT_URL);
             const script = document.createElement('script');
             script.src = SCRIPT_URL + '?callback=callback&t=' + Date.now();
             document.body.appendChild(script);
+            console.log('2. Скрипт добавлен в DOM');
         }
 
         // === ФУНКЦИЯ, КОТОРУЮ ВЫЗЫВАЕТ JSONP ===
         function callback(data) {
+            console.log('3. Получены данные от скрипта:', data);
             renderCatalog(data);
         }
 
         // === ОТОБРАЖЕНИЕ ТОВАРОВ ===
         function renderCatalog(products) {
+            console.log('4. Рендерим каталог, товаров:', products?.length);
             const container = document.getElementById('catalog');
             if (!products || products.length === 0) {
-                container.innerHTML = '<div class="error">Каталог пуст. Добавьте товары в таблицу.</div>';
+                container.innerHTML = '<div class="error">❌ Каталог пуст. Добавьте товары в таблицу.</div>';
                 return;
             }
             container.innerHTML = products.map(p => `
@@ -148,6 +152,7 @@
                     </button>
                 </div>
             `).join('');
+            console.log('5. Каталог отрисован');
         }
 
         // === ОТКРЫТЬ МОДАЛКУ ===
@@ -200,17 +205,8 @@
         }
 
         // === ЗАПУСК ===
-        function loadCatalog() {
-    console.log('Загружаем каталог, URL:', SCRIPT_URL);
-    const script = document.createElement('script');
-    script.src = SCRIPT_URL + '?callback=callback&t=' + Date.now();
-    document.body.appendChild(script);
-}
-
-function callback(data) {
-    console.log('Получены данные:', data);
-    renderCatalog(data);
-}
+        console.log('0. Страница загружена, запускаем loadCatalog()');
+        loadCatalog();
     </script>
 </body>
 </html>
